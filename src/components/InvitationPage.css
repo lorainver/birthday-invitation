@@ -1,153 +1,422 @@
+/* ===== 邀请函页面 ===== */
 .invitation-page {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
-  background: linear-gradient(to top left, #e0f7fa, #fce4ec); /* 柔和渐变背景 */
-  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    #fce4ec 0%,
+    #f3e5f5 30%,
+    #e0f7fa 70%,
+    #fff9c4 100%
+  );
+  overflow-x: hidden;
   position: relative;
 }
 
+/* ===== 返回按钮 ===== */
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #e91e63;
+  box-shadow: 0 4px 16px rgba(233, 30, 99, 0.15);
+  transition: all 0.25s ease;
+}
+
+.back-button:hover {
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(233, 30, 99, 0.25);
+  transform: translateX(-2px);
+}
+
+/* ===== 邀请卡主体 ===== */
 .invitation-card {
-  background: rgba(255, 255, 255, 0.8); /* 半透明白色 */
-  backdrop-filter: blur(10px); /* 玻璃效果 */
-  border-radius: 20px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px;
+  padding: 32px 28px;
+  box-shadow:
+    0 20px 60px rgba(233, 30, 99, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
   text-align: center;
-  max-width: 500px;
+  max-width: 520px;
   width: 100%;
   position: relative;
   overflow: hidden;
 }
 
+/* 卡片顶部装饰光晕 */
 .invitation-card::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-  animation: magic-sparkle 10s infinite linear;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(255, 105, 180, 0.06) 60deg,
+    transparent 120deg,
+    rgba(100, 181, 246, 0.06) 180deg,
+    transparent 240deg,
+    rgba(255, 193, 7, 0.06) 300deg,
+    transparent 360deg
+  );
+  animation: card-rotate 20s linear infinite;
+  pointer-events: none;
 }
 
-@keyframes magic-sparkle {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+@keyframes card-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-.invitation-card h2 {
-  color: #8e2de2; /* 紫色 */
-  font-family: 'Comic Sans MS', cursive; /* 可爱的字体 */
-  font-size: 2.2em;
-  margin-bottom: 20px;
+/* ===== 卡片头部 ===== */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  position: relative;
 }
 
-.invitation-card p {
-  color: #555;
-  font-size: 1.1em;
-  line-height: 1.6;
-  margin-bottom: 10px;
+.header-emoji {
+  font-size: 2rem;
+  animation: bounce-emoji 2s ease-in-out infinite;
 }
 
-.invitation-card .event-detail {
-  font-weight: bold;
+.header-emoji:last-child {
+  animation-delay: 0.5s;
+}
+
+@keyframes bounce-emoji {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.card-header h2 {
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  font-weight: 700;
+  color: #e91e63;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #e91e63, #9c27b0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+}
+
+/* ===== 卡片正文 ===== */
+.card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.greeting {
+  color: #4a4a4a;
+  font-size: clamp(1rem, 3vw, 1.1rem);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.greeting strong {
+  color: #e91e63;
+}
+
+/* ===== 信息卡片 ===== */
+.info-cards {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 14px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  min-width: 140px;
+  transition: transform 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(233, 30, 99, 0.12);
+}
+
+.info-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.info-label {
+  font-size: 0.8rem;
+  color: #999;
+  margin-bottom: 2px;
+}
+
+.info-value {
+  font-size: 1rem;
+  font-weight: 600;
   color: #333;
 }
 
+.date-card .info-value {
+  color: #e91e63;
+}
+
+.location-card .info-value {
+  color: #7b1fa2;
+}
+
+.closing {
+  color: #7b1fa2;
+  font-size: 1rem;
+  margin-top: 16px;
+}
+
+/* ===== 照片墙 ===== */
 .photo-wall {
-  margin-top: 30px;
+  margin-top: 28px;
   padding-top: 20px;
-  border-top: 1px dashed #ccc;
+  border-top: 2px dashed rgba(233, 30, 99, 0.15);
+  position: relative;
+  z-index: 1;
 }
 
 .photo-wall h3 {
-  color: #d81b60; /* 深粉色 */
-  font-family: 'Comic Sans MS', cursive;
-  margin-bottom: 15px;
+  color: #d81b60;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
 }
 
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   justify-items: center;
 }
 
-.photo-grid img {
-  width: 100px;
-  height: 100px;
+.photo-item {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.3s ease;
+}
+
+.photo-item img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  display: block;
 }
 
-.photo-grid img:hover {
-  transform: scale(1.05);
-}
-
+/* ===== 底部功能按钮 ===== */
 .footer-actions {
-  margin-top: 30px;
+  margin-top: 28px;
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
 }
 
 .action-button {
-  background: linear-gradient(45deg, #a770ef 0%, #cf8bf3 49%, #fbc2eb 100%); /* 渐变色 */
-  border: none;
-  border-radius: 25px;
-  padding: 10px 20px;
-  font-size: 1em;
-  color: white;
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(167, 112, 239, 0.4);
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 8px;
+  transition: all 0.3s ease;
+  min-width: 130px;
+  justify-content: center;
 }
 
-.action-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(167, 112, 239, 0.6);
+.music-button {
+  background: linear-gradient(135deg, #ab47bc, #7b1fa2);
+  box-shadow: 0 4px 16px rgba(123, 31, 162, 0.35);
 }
 
-/* 移动端适配 */
+.music-button.playing {
+  background: linear-gradient(135deg, #7b1fa2, #4a148c);
+  box-shadow: 0 6px 20px rgba(123, 31, 162, 0.5);
+}
+
+.nav-button {
+  background: linear-gradient(135deg, #f06292, #e91e63);
+  box-shadow: 0 4px 16px rgba(233, 30, 99, 0.35);
+}
+
+.nav-button:hover {
+  box-shadow: 0 8px 24px rgba(233, 30, 99, 0.5);
+}
+
+/* 音乐播放动画条 */
+.music-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+  margin-left: 4px;
+}
+
+.music-bars span {
+  display: block;
+  width: 3px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  animation: music-bar-dance 0.8s ease-in-out infinite;
+}
+
+.music-bars span:nth-child(1) { animation-delay: 0s; height: 8px; }
+.music-bars span:nth-child(2) { animation-delay: 0.2s; height: 14px; }
+.music-bars span:nth-child(3) { animation-delay: 0.4s; height: 6px; }
+
+@keyframes music-bar-dance {
+  0%, 100% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1); }
+}
+
+/* ===== 照片大图预览 (Lightbox) ===== */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  cursor: pointer;
+  padding: 20px;
+}
+
+.lightbox img {
+  max-width: 90vw;
+  max-height: 80vh;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.lightbox-hint {
+  position: absolute;
+  bottom: 30px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.9rem;
+}
+
+/* ===== 移动端适配 ===== */
 @media (max-width: 768px) {
+  .invitation-page {
+    padding: 16px;
+    padding-top: 70px;
+  }
+
   .invitation-card {
-    padding: 20px;
+    padding: 24px 20px;
+    border-radius: 20px;
   }
-  .invitation-card h2 {
-    font-size: 1.8em;
+
+  .info-cards {
+    flex-direction: column;
+    gap: 10px;
   }
-  .invitation-card p {
-    font-size: 1em;
+
+  .info-card {
+    width: 100%;
+    justify-content: flex-start;
   }
+
   .photo-grid {
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 8px;
   }
-  .photo-grid img {
-    width: 80px;
-    height: 80px;
-  }
+
   .footer-actions {
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
   }
+
   .action-button {
-    width: 80%;
-    margin: 0 auto;
-    justify-content: center;
+    width: 100%;
+  }
+
+  .card-header {
+    gap: 8px;
+  }
+
+  .header-emoji {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }

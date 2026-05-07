@@ -1,29 +1,58 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Music, MapPin } from 'lucide-react'; // 引入图标
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { Music, MapPin, ArrowLeft, X } from 'lucide-react';
 import './InvitationPage.css';
 
-const InvitationPage: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = React.useRef<HTMLAudioElement>(null);
+interface InvitationPageProps {
+  onBack: () => void;
+}
 
-  // 音乐播放/暂停逻辑
+/* 照片数据 — 使用 picsum 占位图，可替换为真实照片 */
+const PHOTOS = [
+  { src: 'https://picsum.photos/seed/birthday1/400/400', alt: '朵朵童年照片 1' },
+  { src: 'https://picsum.photos/seed/birthday2/400/400', alt: '朵朵童年照片 2' },
+  { src: 'https://picsum.photos/seed/birthday3/400/400', alt: '朵朵童年照片 3' },
+  { src: 'https://picsum.photos/seed/birthday4/400/400', alt: '朵朵童年照片 4' },
+  { src: 'https://picsum.photos/seed/birthday5/400/400', alt: '朵朵童年照片 5' },
+  { src: 'https://picsum.photos/seed/birthday6/400/400', alt: '朵朵童年照片 6' },
+];
+
+/* 照片入场动画变体 */
+const photoVariants: Variants = {
+  hidden: { opacity: 0, y: 30, scale: 0.8 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      delay: 2.0 + i * 0.15,
+      duration: 0.5,
+      type: 'spring' as const,
+      stiffness: 200,
+    },
+  }),
+};
+
+const InvitationPage: React.FC<InvitationPageProps> = ({ onBack }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedPhoto, setSelectedPhoto] = useState<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
   const toggleMusic = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
-        audioRef.current.play();
+        audioRef.current.play().catch(() => {});
       }
       setIsPlaying(!isPlaying);
     }
   };
 
-  // 地图导航逻辑
   const navigateToMap = () => {
-    const address = "巴国城六六六宴会大厅";
-    const mapUrl = `https://uri.amap.com/search?keyword=${encodeURIComponent(address)}&callnative=1`; // 高德地图搜索URL
-    window.open(mapUrl, '_blank');
+    const address = '巴国城六六六宴会大厅';
+    const qqmapUrl = `https://apis.map.qq.com/uri/v1/routeplan?type=drive&to=${encodeURIComponent(address)}&referer=myapp`;
+    window.open(qqmapUrl, '_blank');
   };
 
   return (
@@ -31,89 +60,185 @@ const InvitationPage: React.FC = () => {
       className="invitation-page"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1, delay: 0.5 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.8 }}
     >
+      {/* 返回按钮 */}
+      <motion.button
+        className="back-button"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.5 }}
+        onClick={onBack}
+      >
+        <ArrowLeft size={18} />
+        <span>返回</span>
+      </motion.button>
+
       <div className="invitation-card">
-        <motion.h2
+        {/* 标题 */}
+        <motion.div
+          className="card-header"
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
+          transition={{ delay: 0.8, duration: 0.6, type: 'spring' as const }}
         >
-          🎉 朵朵 10 岁生日宴 🎉
-        </motion.h2>
-        <motion.p
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 1, duration: 0.6 }}
-        >
-          亲爱的朋友们，
-        </motion.p>
-        <motion.p
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-        >
-          诚挚邀请您参加朵朵的 10 岁生日派对！
-        </motion.p>
-        <motion.p
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 1.4, duration: 0.6 }}
-          className="event-detail"
-        >
-          <span role="img" aria-label="date">📅</span> 日期：5月2日
-        </motion.p>
-        <motion.p
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 1.6, duration: 0.6 }}
-          className="event-detail"
-        >
-          <span role="img" aria-label="location">📍</span> 地点：巴国城六六六宴会大厅
-        </motion.p>
-        <motion.p
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 1.8, duration: 0.6 }}
-        >
-          期待与您一同分享这份喜悦！
-        </motion.p>
+          <div className="header-emoji">🎉</div>
+          <h2>朵朵 10 岁生日宴</h2>
+          <div className="header-emoji">🎉</div>
+        </motion.div>
+
+        {/* 正文 */}
+        <motion.div className="card-body">
+          <motion.p
+            className="greeting"
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 1.0, duration: 0.6 }}
+          >
+            亲爱的朋友们，
+          </motion.p>
+          <motion.p
+            className="greeting"
+            initial={{ x: 50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 1.2, duration: 0.6 }}
+          >
+            诚挚邀请您参加朵朵的 <strong>10 岁生日派对</strong>！
+          </motion.p>
+
+          {/* 信息卡片 */}
+          <motion.div
+            className="info-cards"
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1.5, duration: 0.6 }}
+          >
+            <div className="info-card date-card">
+              <span className="info-icon">📅</span>
+              <div className="info-content">
+                <span className="info-label">时间</span>
+                <span className="info-value">5月2日</span>
+              </div>
+            </div>
+            <div className="info-card location-card">
+              <span className="info-icon">📍</span>
+              <div className="info-content">
+                <span className="info-label">地点</span>
+                <span className="info-value">巴国城六六六宴会大厅</span>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.p
+            className="closing"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1.8, duration: 0.6 }}
+          >
+            期待与您一同分享这份喜悦！🎈
+          </motion.p>
+        </motion.div>
 
         {/* 成长照片墙 */}
         <motion.div
           className="photo-wall"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.0, duration: 0.8 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.8 }}
         >
-          <h3>💖 成长足迹 💖</h3>
+          <motion.h3
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 1.9, duration: 0.5 }}
+          >
+            💖 成长足迹 💖
+          </motion.h3>
           <div className="photo-grid">
-            {/* 使用占位图，实际可替换为朵朵照片 */}
-            <img src="https://via.placeholder.com/100x100?text=朵朵1" alt="朵朵童年照片1" />
-            <img src="https://via.placeholder.com/100x100?text=朵朵2" alt="朵朵童年照片2" />
-            <img src="https://via.placeholder.com/100x100?text=朵朵3" alt="朵朵童年照片3" />
-            <img src="https://via.placeholder.com/100x100?text=朵朵4" alt="朵朵童年照片4" />
+            {PHOTOS.map((photo, i) => (
+              <motion.div
+                key={i}
+                className="photo-item"
+                custom={i}
+                variants={photoVariants}
+                initial="hidden"
+                animate="visible"
+                whileHover={{ y: -6, boxShadow: '0 12px 30px rgba(0,0,0,0.2)' }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedPhoto(i)}
+              >
+                <img src={photo.src} alt={photo.alt} loading="lazy" />
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
-        {/* 底部功能区 */}
+        {/* 底部功能按钮 */}
         <motion.div
           className="footer-actions"
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.2, duration: 0.8 }}
+          transition={{ delay: 3.0, duration: 0.6 }}
         >
-          <button onClick={toggleMusic} className="action-button">
-            <Music size={20} /> {isPlaying ? '暂停音乐' : '播放音乐'}
-          </button>
-          <button onClick={navigateToMap} className="action-button">
-            <MapPin size={20} /> 一键导航
-          </button>
+          <motion.button
+            className={`action-button music-button ${isPlaying ? 'playing' : ''}`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={toggleMusic}
+          >
+            <Music size={20} />
+            <span>{isPlaying ? '暂停音乐' : '播放音乐'}</span>
+            {isPlaying && (
+              <span className="music-bars">
+                <span /><span /><span />
+              </span>
+            )}
+          </motion.button>
+          <motion.button
+            className="action-button nav-button"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={navigateToMap}
+          >
+            <MapPin size={20} />
+            <span>一键导航</span>
+          </motion.button>
         </motion.div>
       </div>
 
-      {/* 背景音乐播放器 */}
-      <audio ref={audioRef} loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+      {/* 照片大图预览 */}
+      <AnimatePresence>
+        {selectedPhoto !== null && (
+          <motion.div
+            className="lightbox"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedPhoto(null)}
+          >
+            <motion.img
+              src={PHOTOS[selectedPhoto].src}
+              alt={PHOTOS[selectedPhoto].alt}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: 'spring' as const, stiffness: 300, damping: 25 }}
+            />
+            <button className="lightbox-close" onClick={() => setSelectedPhoto(null)}>
+              <X size={24} />
+            </button>
+            <div className="lightbox-hint">点击任意处关闭</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 背景音乐 */}
+      <audio
+        ref={audioRef}
+        loop
+        preload="auto"
+        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+      />
     </motion.div>
   );
 };
