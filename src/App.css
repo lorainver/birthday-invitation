@@ -1,0 +1,23 @@
+.app-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #fce4ec, #e0f7fa); /* 柔和的马卡龙渐变背景 */
+  font-family: 'Arial', sans-serif; /* 基础字体 */
+  overflow: hidden; /* 防止内容溢出，特别是动画效果 */
+  position: relative;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+  }
+}
